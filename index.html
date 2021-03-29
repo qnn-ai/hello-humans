@@ -26,6 +26,15 @@
           console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
         }
 
+        function generateUUID()
+        {
+          const array = new Uint16Array(16);
+          const idBuffer = window.crypto.getRandomValues(array);
+          const str = Array.prototype.map.call(new Uint8Array(idBuffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+
+          return str;
+        }
+
         // Let us open our database
         var DBOpenRequest = window.indexedDB.open("the_shared_memory");
 
@@ -42,20 +51,47 @@
           // variable. This is used a lot later on
           db = DBOpenRequest.result;
 
-          // Run the displayData() function to populate the task
-          // list with all the to-do list data already in the IDB
-          
-          addData();
+
+
+          var doc1 = {
+            "$id": "null",
+            "subject_id": null,
+            "creator_id": null,
+            "payload": null,
+            "t": 0
+          }
+
+        // open a read/write db transaction, ready for adding the data
+         var transaction = db.transaction(['null'], 'readwrite');
+
+
+        // report on the success of the transaction completing, when everything is done
+        transaction.oncomplete = function(event) {
+          alert('Transaction completed.');
         };
 
-        function generateUUID()
-        {
-          const array = new Uint16Array(16);
-          const idBuffer = window.crypto.getRandomValues(array);
-          const str = Array.prototype.map.call(new Uint8Array(idBuffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+        transaction.onerror = function(event) {
+          alert('Transaction not opened due to error. Duplicate items not allowed.');
+        };
 
-          return str;
-        }
+        // create an object store on the transaction
+        var objectStore = transaction.objectStore('null');
+
+        // Make a request to add our newItem object to the object store
+        var objectStoreRequest = objectStore.add(doc1);
+
+        objectStoreRequest.onsuccess = function(event) {
+          // report the success of our request
+          alert('Request successful');
+        };
+
+        var doc1 = {
+          "$id": "null",
+          "subject_id": null,
+          "creator_id": null,
+          "payload": null,
+          "t": 0
+        };
 
         // This event handles the event whereby a new version of
         // the database needs to be created Either one has not
@@ -79,56 +115,6 @@
 
         };
 
-        function addData() {
-  
-          // Create a new object ready to insert into the IDB
-          var doc1 = {
-            "subject_id": null,
-            "creator_id": null,
-            "payload": null,
-            "t": 0
-          }
-
-                  var doc1 = {
-          "$id": "null",
-          "subject_id": null,
-          "creator_id": null,
-          "payload": null,
-          "t": 0
-        }
-
-        // open a read/write db transaction, ready for adding the data
-         var objectStore = db.transaction('null', 'readwrite').objectStore('null');
-
-
-        // report on the success of the transaction completing, when everything is done
-        transaction.oncomplete = function(event) {
-          alert('Transaction completed.');
-        };
-
-        transaction.onerror = function(event) {
-          alert('Transaction not opened due to error. Duplicate items not allowed.');
-        };
-
-        // create an object store on the transaction
-        var objectStore = transaction.objectStore("toDoList");
-
-        // Make a request to add our newItem object to the object store
-        var objectStoreRequest = objectStore.add(doc1, );
-
-        objectStoreRequest.onsuccess = function(event) {
-          // report the success of our request
-          note.innerHTML += '<li>Request successful.</li>';
-        };
-      };
-
-        var doc1 = {
-          "$id": "null",
-          "subject_id": null,
-          "creator_id": null,
-          "payload": null,
-          "t": 0
-        }
 
 
 /*
@@ -171,19 +157,11 @@
           "t": 3
         };
 
+        var jackSong = "//https://youtu.be/_NSn5RfxoXs";
 
 
 
-
-
-
-//https://youtu.be/_NSn5RfxoXs
-
-
-
-
-
-        alert("\nCAN:\nSPREAD ITS DNA\nINTO\nINDEXEDDB.\n\nMIGHT WANNA GET IT CHECKED...\n\nJUST SAYIN...\n\n");
+        alert("\nCAN:\nSPREAD ITS DNA\nINTO\nINDEXEDDB.\n\n");
       </script>
 
       <script id="can_spread_its_DNA_into_DB">
